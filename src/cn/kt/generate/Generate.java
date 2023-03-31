@@ -21,6 +21,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.mybatis.generator.api.MyBatisGenerator;
@@ -30,6 +31,8 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 生成mybatis相关代码
@@ -65,7 +68,7 @@ public class Generate {
 
         PsiElement[] psiElements = anActionEvent.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
 
-        if (psiElements == null || psiElements.length == 0) {
+        if (psiElements == null || psiElements.length == 0 || psiElements.length > 1) {
             return;
         }
 
@@ -84,6 +87,19 @@ public class Generate {
             DatabaseType = "Sqlite";
         } else if (driverClass.contains("mariadb")) {
             DatabaseType = "MariaDB";
+        }
+
+        if (DatabaseType.equals(DbType.MySQL.name())) {
+            Pattern pattern = Pattern.compile("^jdbc:mysql://[0-9a-zA-Z.:]+/([^?/]+)/?\\??.*$");
+            Matcher m = pattern.matcher(url);
+            String schema = null;
+            if (m.find()) {
+                schema = m.group(1);
+            }
+            if (schema == null || "".equals(schema.trim())) {
+                Messages.showErrorDialog("Mysql should specify the schema in connection url!", "Error");
+                return;
+            }
         }
 
 
@@ -138,9 +154,9 @@ public class Generate {
                                 MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
                                 myBatisGenerator.generate(new GeneratorCallback(), contexts, fullyqualifiedTables);
                             } catch (Exception e) {
-                                //                                Messages.showMessageDialog(e.getMessage() + " if use mysql,check version8?", "Generate failure", Messages.getInformationIcon());
                                 System.out.println("代码生成报错");
-
+                                e.printStackTrace();
+                                Messages.showMessageDialog(e.getMessage() + " if use mysql,check version8?", "Generate Failure", Messages.getInformationIcon());
                             }
                             project.getBaseDir().refresh(false, true);
                         }
@@ -262,11 +278,24 @@ public class Generate {
         tableConfig.setTableName(config.getTableName());
         tableConfig.setDomainObjectName(config.getModelName());
 
-        String schema;
+        String schema = null;
         if (DatabaseType.equals(DbType.MySQL.name())) {
-            String[] name_split = url.split("/");
-            schema = name_split[name_split.length - 1];
-            tableConfig.setSchema(schema);
+            Pattern pattern = Pattern.compile("^jdbc:mysql://[0-9a-zA-Z.:]+/([^?/]+)/?\\??.*$");
+            Matcher m = pattern.matcher(url);
+            if (m.find()) {
+                schema = m.group(1);
+            } else {
+                PsiElement parent = psiElement.getParent();
+                if (parent != null) {
+                    String namespace = parent.toString();
+                    if (namespace != null && !"".equals(namespace.trim())) {
+                        if (namespace.startsWith("schema:")) {
+                            schema = namespace.split(":")[1];
+                        }
+                    }
+                }
+            }
+//            tableConfig.setSchema(schema);
         } else if (DatabaseType.equals(DbType.Oracle.name())) {
             String[] name_split = url.split(":");
             schema = name_split[name_split.length - 1];
@@ -285,7 +314,7 @@ public class Generate {
         }
         if (config.isUseSchemaPrefix()) {
             if (DbType.MySQL.name().equals(DatabaseType)) {
-                tableConfig.setSchema(schema);
+//                tableConfig.setSchema(schema);
             } else if (DbType.Oracle.name().equals(DatabaseType)) {
                 //Oracle的schema为用户名，如果连接用户拥有dba等高级权限，若不设schema，会导致把其他用户下同名的表也生成一遍导致mapper中代码重复
                 tableConfig.setSchema(username);

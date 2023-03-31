@@ -17,13 +17,17 @@ public class MainAction extends AnAction {
 
     /**
      * 点击后打开插件主页面
+     *
      * @param e
      */
     @Override
     public void actionPerformed(AnActionEvent e) {
         PsiElement[] psiElements = e.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
         if (psiElements == null || psiElements.length == 0) {
-            Messages.showMessageDialog("Please select one or more tables", "Notice", Messages.getInformationIcon());
+            Messages.showMessageDialog("Please select one table!", "Notice", Messages.getInformationIcon());
+            return;
+        } else if (psiElements.length > 1) {
+            Messages.showMessageDialog("Not support multi table!", "Notice", Messages.getInformationIcon());
             return;
         }
         for (PsiElement psiElement : psiElements) {

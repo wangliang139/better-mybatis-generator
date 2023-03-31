@@ -4,7 +4,6 @@ import cn.kt.ui.SettingUI;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.options.SearchableConfigurable;
 import com.intellij.openapi.project.Project;
-import com.sun.istack.internal.NotNull;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +20,7 @@ public class SettingConfigurable implements SearchableConfigurable {
     private final Project project;
 
 
-    public SettingConfigurable(@NotNull Project project) {
+    public SettingConfigurable(Project project) {
         this.project = project;
     }
 
@@ -37,7 +36,6 @@ public class SettingConfigurable implements SearchableConfigurable {
         return "gene.helpTopic";
     }
 
-    @NotNull
     @Override
     public String getId() {
         return "gene.id";
