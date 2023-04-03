@@ -17,7 +17,7 @@ import java.time.LocalTime;
 /**
  * @author wangliang07@corp.netease.com
  */
-public class JavaTypeResolverJsr310Impl  extends JavaTypeResolverDefaultImpl {
+public class JavaTypeResolverJsr310Impl extends JavaTypeResolverDefaultImpl {
     public JavaTypeResolverJsr310Impl() {
     }
 

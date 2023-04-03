@@ -27,12 +27,11 @@ import java.util.Map;
 public class SettingUI extends JDialog {
     public JPanel mainPanel = new JBPanel<>(new GridLayout(2, 1));
 
-
-    private JTextField tableNameField  = new JTextField(10);
+    private JTextField tableNameField = new JTextField(10);
     private JBTextField modelPackageField = new JBTextField(12);
     private JBTextField daoPackageField = new JBTextField(12);
     private JBTextField xmlPackageField = new JBTextField(12);
-    private JTextField mapperNameField  = new JTextField(10);
+    private JTextField mapperNameField = new JTextField(10);
     private JTextField domainNameField = new JTextField(10);
     private JTextField keyField = new JTextField(12);
 
@@ -61,15 +60,15 @@ public class SettingUI extends JDialog {
     private JCheckBox mysql_8Box = new JCheckBox("mysql_8");
 
     private PersistentConfig config;
+
     public SettingUI() {
         setContentPane(mainPanel);
     }
 
 
-
     public void createUI(Project project) {
         String projectFolder = project.getBasePath();
-        mainPanel.setPreferredSize(new Dimension(0,0));
+        mainPanel.setPreferredSize(new Dimension(0, 0));
         JPanel paneMainTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         JPanel paneMainTop1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -165,7 +164,7 @@ public class SettingUI extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 super.actionPerformed(e);
-                projectFolderBtn.setText(projectFolderBtn.getText().replaceAll("\\\\","/"));
+                projectFolderBtn.setText(projectFolderBtn.getText().replaceAll("\\\\", "/"));
             }
         });
         projectFolderPanel.add(projectFolderBtn);
@@ -182,7 +181,7 @@ public class SettingUI extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 super.actionPerformed(e);
-                modelFolderBtn.setText(modelFolderBtn.getText().replaceAll("\\\\","/"));
+                modelFolderBtn.setText(modelFolderBtn.getText().replaceAll("\\\\", "/"));
             }
         });
         modelFolderPanel.add(modelFolderBtn);
@@ -200,7 +199,7 @@ public class SettingUI extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 super.actionPerformed(e);
-                daoFolderBtn.setText(daoFolderBtn.getText().replaceAll("\\\\","/"));
+                daoFolderBtn.setText(daoFolderBtn.getText().replaceAll("\\\\", "/"));
             }
         });
         daoFolderPanel.add(daoFolderBtn);
@@ -216,7 +215,8 @@ public class SettingUI extends JDialog {
 
         xmlFolderBtn.setTextFieldPreferredWidth(45);
         xmlFolderBtn.setText(projectFolder);
-        xmlFolderBtn.addBrowseFolderListener(new TextBrowseFolderListener(FileChooserDescriptorFactory.createSingleFileOrFolderDescriptor()) {});
+        xmlFolderBtn.addBrowseFolderListener(new TextBrowseFolderListener(FileChooserDescriptorFactory.createSingleFileOrFolderDescriptor()) {
+        });
         xmlFolderPanel.add(xmlFolderBtn);
         xmlFolderPanel.add(new JLabel("mvn path:"));
         xmlMvnField.setText("src/main/resources");
@@ -295,19 +295,19 @@ public class SettingUI extends JDialog {
 
     public boolean isModified() {
         boolean modified = true;
-//        modified |= !this.id.getText().equals(config.getId());
-//        modified |= !this.entity.getText().equals(config.getEntity());
-//        modified |= !this.project_directory.getText().equals(config.getProject_directory());
-//        modified |= !this.dao_name.getText().equals(config.getDao_name());
-//
-//        modified |= !this.entity_package.getText().equals(config.getEntity_package());
-//        modified |= !this.entity_directory.getText().equals(config.getEntity_directory());
-//        modified |= !this.mapper_package.getText().equals(config.getMapper_package());
-//        modified |= !this.mapper_directory.getText().equals(config.getMapper_directory());
-//        modified |= !this.xml_package.getText().equals(config.getXml_package());
-//        modified |= !this.xml_directory.getText().equals(config.getXml_directory());
-//        modified |= !this.password.getPassword().equals(config.getPassword());
-//        modified |= !this.username.getText().equals(config.getUsername());
+        //        modified |= !this.id.getText().equals(config.getId());
+        //        modified |= !this.entity.getText().equals(config.getEntity());
+        //        modified |= !this.project_directory.getText().equals(config.getProject_directory());
+        //        modified |= !this.dao_name.getText().equals(config.getDao_name());
+        //
+        //        modified |= !this.entity_package.getText().equals(config.getEntity_package());
+        //        modified |= !this.entity_directory.getText().equals(config.getEntity_directory());
+        //        modified |= !this.mapper_package.getText().equals(config.getMapper_package());
+        //        modified |= !this.mapper_directory.getText().equals(config.getMapper_directory());
+        //        modified |= !this.xml_package.getText().equals(config.getXml_package());
+        //        modified |= !this.xml_directory.getText().equals(config.getXml_directory());
+        //        modified |= !this.password.getPassword().equals(config.getPassword());
+        //        modified |= !this.username.getText().equals(config.getUsername());
         return modified;
     }
 
@@ -341,7 +341,6 @@ public class SettingUI extends JDialog {
         initConfig.put(config.getName(), config);
         this.config.setInitConfig(initConfig);
 
-
     }
 
     public void reset() {
@@ -352,6 +351,5 @@ public class SettingUI extends JDialog {
     public JPanel getContentPane() {
         return mainPanel;
     }
-
 
 }

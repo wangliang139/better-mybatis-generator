@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 /**
- *配置设置界面
+ * 配置设置界面
  * Created by kangtian on 2018/7/18.
  */
 public class SettingConfigurable implements SearchableConfigurable {
@@ -18,7 +18,6 @@ public class SettingConfigurable implements SearchableConfigurable {
 
     @SuppressWarnings("FieldCanBeLocal")
     private final Project project;
-
 
     public SettingConfigurable(Project project) {
         this.project = project;

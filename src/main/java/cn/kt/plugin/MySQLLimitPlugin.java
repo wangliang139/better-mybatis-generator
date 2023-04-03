@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * @author wangliang07@corp.netease.com
  */
-public class MySQLLimitPlugin  extends PluginAdapter {
+public class MySQLLimitPlugin extends PluginAdapter {
     public MySQLLimitPlugin() {
     }
 

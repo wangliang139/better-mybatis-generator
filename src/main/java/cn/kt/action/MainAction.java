@@ -14,15 +14,14 @@ import com.intellij.psi.PsiElement;
  */
 public class MainAction extends AnAction {
 
-
     /**
      * 点击后打开插件主页面
      *
-     * @param e
+     * @param event -
      */
     @Override
-    public void actionPerformed(AnActionEvent e) {
-        PsiElement[] psiElements = e.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
+    public void actionPerformed(AnActionEvent event) {
+        PsiElement[] psiElements = event.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
         if (psiElements == null || psiElements.length == 0) {
             Messages.showMessageDialog("Please select one table!", "Notice", Messages.getInformationIcon());
             return;
@@ -36,7 +35,7 @@ public class MainAction extends AnAction {
                 return;
             }
         }
-        new MainUI(e);
+        new MainUI(event);
     }
 
 }

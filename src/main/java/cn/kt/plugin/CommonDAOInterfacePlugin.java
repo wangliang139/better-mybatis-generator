@@ -69,8 +69,8 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
             if (!this.methods.isEmpty()) {
                 Iterator var10 = this.methods.iterator();
 
-                while(var10.hasNext()) {
-                    Method method = (Method)var10.next();
+                while (var10.hasNext()) {
+                    Method method = (Method) var10.next();
                     mapperInterface.addMethod(method);
                 }
             }
@@ -78,8 +78,8 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
             List<GeneratedJavaFile> generatedJavaFiles = introspectedTable.getGeneratedJavaFiles();
             Iterator var18 = generatedJavaFiles.iterator();
 
-            while(var18.hasNext()) {
-                GeneratedJavaFile generatedJavaFile = (GeneratedJavaFile)var18.next();
+            while (var18.hasNext()) {
+                GeneratedJavaFile generatedJavaFile = (GeneratedJavaFile) var18.next();
                 CompilationUnit compilationUnit = generatedJavaFile.getCompilationUnit();
                 FullyQualifiedJavaType type = compilationUnit.getType();
                 String modelName = type.getShortName();
@@ -117,7 +117,7 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
         if (introspectedTable.getPrimaryKeyColumns().size() > 1) {
             primaryKeyTypeJavaType = new FullyQualifiedJavaType(targetPackage + "." + domainObjectName + "Key");
         } else if (introspectedTable.hasPrimaryKeyColumns()) {
-            primaryKeyTypeJavaType = ((IntrospectedColumn)introspectedTable.getPrimaryKeyColumns().get(0)).getFullyQualifiedJavaType();
+            primaryKeyTypeJavaType = ((IntrospectedColumn) introspectedTable.getPrimaryKeyColumns().get(0)).getFullyQualifiedJavaType();
         } else {
             primaryKeyTypeJavaType = baseModelJavaType;
         }

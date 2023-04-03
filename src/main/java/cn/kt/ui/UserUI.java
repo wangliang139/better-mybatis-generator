@@ -29,7 +29,6 @@ import java.util.Map;
  * Created by kangtian on 2018/8/3.
  */
 public class UserUI extends JFrame {
-
     private AnActionEvent anActionEvent;
     private Project project;
     private PersistentConfig persistentConfig;
@@ -42,7 +41,6 @@ public class UserUI extends JFrame {
 
     public JTextField usernameField = new JBTextField(20);
     public JTextField passwordField = new JBTextField(20);
-
 
     public UserUI(String driverClass, String address, AnActionEvent anActionEvent, Config config) throws HeadlessException {
         this.anActionEvent = anActionEvent;

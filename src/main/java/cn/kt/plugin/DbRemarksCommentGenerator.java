@@ -26,7 +26,7 @@ import java.util.Set;
 /**
  * @author wangliang07@corp.netease.com
  */
-public class DbRemarksCommentGenerator  implements CommentGenerator {
+public class DbRemarksCommentGenerator implements CommentGenerator {
     private Properties properties = new Properties();
     private boolean columnRemarks;
     private boolean isAnnotations;
@@ -103,8 +103,8 @@ public class DbRemarksCommentGenerator  implements CommentGenerator {
             boolean isId = false;
             Iterator var5 = introspectedTable.getPrimaryKeyColumns().iterator();
 
-            while(var5.hasNext()) {
-                IntrospectedColumn column = (IntrospectedColumn)var5.next();
+            while (var5.hasNext()) {
+                IntrospectedColumn column = (IntrospectedColumn) var5.next();
                 if (introspectedColumn == column) {
                     isId = true;
                     field.addAnnotation("@Id");

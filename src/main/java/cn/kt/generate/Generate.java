@@ -43,7 +43,7 @@ public class Generate {
     private AnActionEvent anActionEvent;
     private Project project;
     private PersistentConfig persistentConfig;//持久化的配置
-    private Config config;//界面默认配置
+    private final Config config;//界面默认配置
     private String username;
     private String DatabaseType;//数据库类型
     private String driverClass;//数据库驱动
@@ -56,17 +56,16 @@ public class Generate {
     /**
      * 自动生成的主逻辑
      *
-     * @param anActionEvent
-     * @throws Exception
+     * @param event 事件
      */
-    public void execute(AnActionEvent anActionEvent) throws Exception {
-        this.anActionEvent = anActionEvent;
-        this.project = anActionEvent.getData(PlatformDataKeys.PROJECT);
+    public void execute(AnActionEvent event) {
+        this.anActionEvent = event;
+        this.project = event.getData(PlatformDataKeys.PROJECT);
         this.persistentConfig = PersistentConfig.getInstance(project);
 
         saveConfig();//执行前 先保存一份当前配置
 
-        PsiElement[] psiElements = anActionEvent.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
+        PsiElement[] psiElements = event.getData(LangDataKeys.PSI_ELEMENT_ARRAY);
 
         if (psiElements == null || psiElements.length == 0 || psiElements.length > 1) {
             return;
@@ -104,66 +103,61 @@ public class Generate {
 
 
         //用后台任务执行代码生成
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
+        ApplicationManager.getApplication().invokeLater(() -> ProgressManager.getInstance().run(new Task.Backgroundable(project, "mybatis generating...") {
             @Override
-            public void run() {
-                ProgressManager.getInstance().run(new Task.Backgroundable(project, "mybatis generating...") {
-                    @Override
-                    public void run(@NotNull ProgressIndicator indicator) {
+            public void run(@NotNull ProgressIndicator indicator) {
 
-                        for (PsiElement psiElement : psiElements) {
-                            if (!(psiElement instanceof DbTable)) {
-                                continue;
-                            }
-                            Configuration configuration = new Configuration();
-                            Context context = new Context(ModelType.CONDITIONAL);
-                            configuration.addContext(context);
-
-                            context.setId("myid");
-                            context.addProperty("autoDelimitKeywords", "true");
-                            context.addProperty("beginningDelimiter", "`");
-                            context.addProperty("endingDelimiter", "`");
-                            context.addProperty("javaFileEncoding", "UTF-8");
-                            context.addProperty(PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING, "UTF-8");
-                            context.setTargetRuntime("MyBatis3");
-
-                            JDBCConnectionConfiguration jdbcConfig = buildJdbcConfig(psiElement);
-                            if (jdbcConfig == null) {
-                                return;
-                            }
-                            TableConfiguration tableConfig = buildTableConfig(psiElement, context);
-                            JavaModelGeneratorConfiguration modelConfig = buildModelConfig();
-                            SqlMapGeneratorConfiguration mapperConfig = buildMapperXmlConfig();
-                            JavaClientGeneratorConfiguration daoConfig = buildDaoConfig();
-                            CommentGeneratorConfiguration commentConfig = buildCommentConfig();
-
-                            context.addTableConfiguration(tableConfig);
-                            context.setJdbcConnectionConfiguration(jdbcConfig);
-                            context.setJavaModelGeneratorConfiguration(modelConfig);
-                            context.setSqlMapGeneratorConfiguration(mapperConfig);
-                            context.setJavaClientGeneratorConfiguration(daoConfig);
-                            context.setCommentGeneratorConfiguration(commentConfig);
-                            addPluginConfiguration(psiElement, context);
-
-                            createFolderForNeed(config);
-                            List<String> warnings = new ArrayList<>();
-                            ShellCallback shellCallback = new DefaultShellCallback(true); // override=true
-                            Set<String> fullyqualifiedTables = new HashSet<>();
-                            Set<String> contexts = new HashSet<>();
-                            try {
-                                MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
-                                myBatisGenerator.generate(new GeneratorCallback(), contexts, fullyqualifiedTables);
-                            } catch (Exception e) {
-                                System.out.println("代码生成报错");
-                                e.printStackTrace();
-                                Messages.showMessageDialog(e.getMessage() + " if use mysql,check version8?", "Generate Failure", Messages.getInformationIcon());
-                            }
-                            project.getBaseDir().refresh(false, true);
-                        }
+                for (PsiElement psiElement : psiElements) {
+                    if (!(psiElement instanceof DbTable)) {
+                        continue;
                     }
-                });
+                    Configuration configuration = new Configuration();
+                    Context context = new Context(ModelType.CONDITIONAL);
+                    configuration.addContext(context);
+
+                    context.setId("myid");
+                    context.addProperty("autoDelimitKeywords", "true");
+                    context.addProperty("beginningDelimiter", "`");
+                    context.addProperty("endingDelimiter", "`");
+                    context.addProperty("javaFileEncoding", "UTF-8");
+                    context.addProperty(PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING, "UTF-8");
+                    context.setTargetRuntime("MyBatis3");
+
+                    JDBCConnectionConfiguration jdbcConfig = buildJdbcConfig(psiElement);
+                    if (jdbcConfig == null) {
+                        return;
+                    }
+                    TableConfiguration tableConfig = buildTableConfig(psiElement, context);
+                    JavaModelGeneratorConfiguration modelConfig = buildModelConfig();
+                    SqlMapGeneratorConfiguration mapperConfig = buildMapperXmlConfig();
+                    JavaClientGeneratorConfiguration daoConfig = buildDaoConfig();
+                    CommentGeneratorConfiguration commentConfig = buildCommentConfig();
+
+                    context.addTableConfiguration(tableConfig);
+                    context.setJdbcConnectionConfiguration(jdbcConfig);
+                    context.setJavaModelGeneratorConfiguration(modelConfig);
+                    context.setSqlMapGeneratorConfiguration(mapperConfig);
+                    context.setJavaClientGeneratorConfiguration(daoConfig);
+                    context.setCommentGeneratorConfiguration(commentConfig);
+                    addPluginConfiguration(psiElement, context);
+
+                    createFolderForNeed(config);
+                    List<String> warnings = new ArrayList<>();
+                    ShellCallback shellCallback = new DefaultShellCallback(true); // override=true
+                    Set<String> fullyqualifiedTables = new HashSet<>();
+                    Set<String> contexts = new HashSet<>();
+                    try {
+                        MyBatisGenerator myBatisGenerator = new MyBatisGenerator(configuration, shellCallback, warnings);
+                        myBatisGenerator.generate(new GeneratorCallback(), contexts, fullyqualifiedTables);
+                    } catch (Exception e) {
+                        System.out.println("代码生成报错");
+                        e.printStackTrace();
+                        Messages.showMessageDialog(e.getMessage() + " if use mysql,check version8?", "Generate Failure", Messages.getInformationIcon());
+                    }
+                    project.getBaseDir().refresh(false, true);
+                }
             }
-        });
+        }));
 
 
     }
@@ -171,7 +165,7 @@ public class Generate {
     /**
      * 创建所需目录
      *
-     * @param config
+     * @param config 配置
      */
     private void createFolderForNeed(Config config) {
         String modelTargetFolder = config.getModelTargetFolder();
@@ -226,14 +220,12 @@ public class Generate {
     /**
      * 生成数据库连接配置
      *
-     * @param psiElement
-     * @return
+     * @param psiElement -
+     * @return -
      */
     private JDBCConnectionConfiguration buildJdbcConfig(PsiElement psiElement) {
-
         JDBCConnectionConfiguration jdbcConfig = new JDBCConnectionConfiguration();
         jdbcConfig.addProperty("nullCatalogMeansCurrent", "true");
-
 
         Map<String, User> users = persistentConfig.getUsers();
         if (users != null && users.containsKey(url)) {
@@ -263,15 +255,14 @@ public class Generate {
             new UserUI(driverClass, url, anActionEvent, config);
             return null;
         }
-
     }
 
     /**
      * 生成table配置
      *
-     * @param psiElement
-     * @param context
-     * @return
+     * @param psiElement -
+     * @param context    -
+     * @return -
      */
     private TableConfiguration buildTableConfig(PsiElement psiElement, Context context) {
         TableConfiguration tableConfig = new TableConfiguration(context);
@@ -295,7 +286,7 @@ public class Generate {
                     }
                 }
             }
-//            tableConfig.setSchema(schema);
+            //            tableConfig.setSchema(schema);
         } else if (DatabaseType.equals(DbType.Oracle.name())) {
             String[] name_split = url.split(":");
             schema = name_split[name_split.length - 1];
@@ -314,7 +305,7 @@ public class Generate {
         }
         if (config.isUseSchemaPrefix()) {
             if (DbType.MySQL.name().equals(DatabaseType)) {
-//                tableConfig.setSchema(schema);
+                //                tableConfig.setSchema(schema);
             } else if (DbType.Oracle.name().equals(DatabaseType)) {
                 //Oracle的schema为用户名，如果连接用户拥有dba等高级权限，若不设schema，会导致把其他用户下同名的表也生成一遍导致mapper中代码重复
                 tableConfig.setSchema(username);
@@ -349,19 +340,19 @@ public class Generate {
             tableConfig.setAlias(config.getTableName());
         }
 
-//        if (ignoredColumns != null) {
-//            ignoredColumns.stream().forEach(new Consumer<IgnoredColumn>() {
-//                @Override
-//                public void accept(IgnoredColumn ignoredColumn) {
-//                    tableConfig.addIgnoredColumn(ignoredColumn);
-//                }
-//            });
-//        }
-//        if (columnOverrides != null) {
-//            for (ColumnOverride columnOverride : columnOverrides) {
-//                tableConfig.addColumnOverride(columnOverride);
-//            }
-//        }
+        //        if (ignoredColumns != null) {
+        //            ignoredColumns.stream().forEach(new Consumer<IgnoredColumn>() {
+        //                @Override
+        //                public void accept(IgnoredColumn ignoredColumn) {
+        //                    tableConfig.addIgnoredColumn(ignoredColumn);
+        //                }
+        //            });
+        //        }
+        //        if (columnOverrides != null) {
+        //            for (ColumnOverride columnOverride : columnOverrides) {
+        //                tableConfig.addColumnOverride(columnOverride);
+        //            }
+        //        }
 
         tableConfig.setMapperName(config.getDaoName());
         return tableConfig;
@@ -371,7 +362,7 @@ public class Generate {
     /**
      * 生成实体类配置
      *
-     * @return
+     * @return -
      */
     private JavaModelGeneratorConfiguration buildModelConfig() {
         String projectFolder = config.getProjectFolder();
@@ -398,7 +389,7 @@ public class Generate {
     /**
      * 生成mapper.xml文件配置
      *
-     * @return
+     * @return -
      */
     private SqlMapGeneratorConfiguration buildMapperXmlConfig() {
 
@@ -435,7 +426,7 @@ public class Generate {
     /**
      * 生成dao接口文件配置
      *
-     * @return
+     * @return -
      */
     private JavaClientGeneratorConfiguration buildDaoConfig() {
 
@@ -466,7 +457,7 @@ public class Generate {
     /**
      * 生成注释配置
      *
-     * @return
+     * @return -
      */
     private CommentGeneratorConfiguration buildCommentConfig() {
         CommentGeneratorConfiguration commentConfig = new CommentGeneratorConfiguration();
@@ -483,19 +474,16 @@ public class Generate {
     }
 
     /**
-     * 添加相关插件（注意插件文件需要通过jar引入）
+     * 添加相关插件
      *
-     * @param context
+     * @param context -
      */
     private void addPluginConfiguration(PsiElement psiElement, Context context) {
-
-
         //实体添加序列化
         PluginConfiguration serializablePlugin = new PluginConfiguration();
         serializablePlugin.addProperty("type", "org.mybatis.generator.plugins.SerializablePlugin");
         serializablePlugin.setConfigurationType("org.mybatis.generator.plugins.SerializablePlugin");
         context.addPluginConfiguration(serializablePlugin);
-
 
         if (config.isNeedToStringHashcodeEquals()) {
             PluginConfiguration equalsHashCodePlugin = new PluginConfiguration();
@@ -557,21 +545,20 @@ public class Generate {
                 context.addPluginConfiguration(commonDAOInterfacePlugin);
             }
         }
-
     }
 
     /**
      * 获取xml文件路径 用以删除之前的xml
      *
-     * @param config
-     * @return
+     * @param config 配置
+     * @return -
      */
     private String getMappingXMLFilePath(Config config) {
         StringBuilder sb = new StringBuilder();
         String mappingXMLPackage = config.getXmlPackage();
         String mappingXMLTargetFolder = config.getXmlTargetFolder();
         String xmlMvnPath = config.getXmlMvnPath();
-        sb.append(mappingXMLTargetFolder + "/" + xmlMvnPath + "/");
+        sb.append(mappingXMLTargetFolder).append("/").append(xmlMvnPath).append("/");
 
         if (!StringUtils.isEmpty(mappingXMLPackage)) {
             sb.append(mappingXMLPackage.replace(".", "/")).append("/");

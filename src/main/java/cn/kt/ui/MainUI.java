@@ -32,8 +32,6 @@ import java.util.Map;
  * Created by kangtian on 2018/8/1.
  */
 public class MainUI extends JFrame {
-
-
     private AnActionEvent anActionEvent;
     private Project project;
     private PersistentConfig persistentConfig;
@@ -41,7 +39,6 @@ public class MainUI extends JFrame {
     private Map<String, Config> initConfigMap;
     private Map<String, Config> historyConfigList;
     private Config config;
-
 
     private JPanel contentPane = new JBPanel<>();
     private JButton buttonOK = new JButton("ok");
@@ -83,7 +80,6 @@ public class MainUI extends JFrame {
     private JCheckBox mysql_8Box = new JCheckBox("mysql_8");
 
 
-
     public MainUI(AnActionEvent anActionEvent) throws HeadlessException {
         this.anActionEvent = anActionEvent;
         this.project = anActionEvent.getData(PlatformDataKeys.PROJECT);
@@ -92,7 +88,6 @@ public class MainUI extends JFrame {
 
         initConfigMap = persistentConfig.getInitConfig();
         historyConfigList = persistentConfig.getHistoryConfigList();
-
 
 
         setTitle("mybatis generate tool");
@@ -108,7 +103,7 @@ public class MainUI extends JFrame {
         String tableName = tableInfo.getTableName();
         String modelName = StringUtils.dbStringToCamelStyle(tableName);
         String primaryKey = "";
-        if(tableInfo.getPrimaryKeys().size()>0){
+        if (tableInfo.getPrimaryKeys().size() > 0) {
             primaryKey = tableInfo.getPrimaryKeys().get(0);
         }
         String projectFolder = project.getBasePath();
@@ -640,12 +635,10 @@ public class MainUI extends JFrame {
                     generator_config.setDaoMvnPath(daoMvnField.getText());
                     generator_config.setXmlMvnPath(xmlMvnField.getText());
 
-
                     new Generate(generator_config).execute(anActionEvent);
                 }
 
             }
-
 
         } catch (Exception e1) {
             e1.printStackTrace();

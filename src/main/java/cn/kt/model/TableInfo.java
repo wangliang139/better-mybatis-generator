@@ -18,7 +18,6 @@ public class TableInfo {
 
     private List<String> primaryKeys = new ArrayList<String>();
 
-
     public TableInfo(DbTable tableElement) {
         this.tableElement = tableElement;
         List<DasColumn> columns = new ArrayList<DasColumn>();
@@ -27,13 +26,10 @@ public class TableInfo {
         List<? extends DasColumn> dasColumns = columnsIter.toList();
         for (DasColumn dasColumn : dasColumns) {
             columns.add(dasColumn);
-
             if (DasUtil.isPrimary(dasColumn)) {
                 primaryKeys.add(dasColumn.getName());
             }
-
         }
-
         this.columns = columns;
     }
 
@@ -58,18 +54,14 @@ public class TableInfo {
     }
 
     public List<DasColumn> getNonPrimaryColumns() {
-        Set<String> pKNameSet = new HashSet<String>();
-        for (String pkName : getPrimaryKeys()) {
-            pKNameSet.add(pkName);
-        }
+        Set<String> pKNameSet = new HashSet<>(getPrimaryKeys());
 
-        List<DasColumn> ret = new ArrayList<DasColumn>();
+        List<DasColumn> ret = new ArrayList<>();
         for (DasColumn column : columns) {
             if (!pKNameSet.contains(column.getName())) {
                 ret.add(column);
             }
         }
-
         return ret;
     }
 }
