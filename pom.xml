@@ -139,18 +139,6 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>hzntes-mail</id>
-            <name>NTES-MAIL-HZ Maven Repository</name>
-            <url>http://repo.mail.netease.com/artifactory/repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <build>
         <finalName>${artifactId}</finalName>
         <plugins>

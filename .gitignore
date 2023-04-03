@@ -30,3 +30,4 @@ swagger/
 /.nb-gradle/
 **/target/
 *.log
+/.gradle/
