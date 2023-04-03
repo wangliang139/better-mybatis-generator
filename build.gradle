@@ -1,46 +1,39 @@
 plugins {
-    id 'java'
-    id 'maven-publish'
+    id "java"
+    id "org.jetbrains.intellij" version "0.7.3"
 }
+
+group = "cn.tk"
+version = "1.0-SNAPSHOT"
 
 repositories {
-    mavenLocal()
-    maven {
-        url = uri('https://repo.maven.apache.org/maven2/')
+    mavenCentral()
+}
+
+intellij {
+    version = "2020.1"
+    type = "IU"
+    plugins = ["com.intellij.java", "com.intellij.database"]
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+tasks {
+    wrapper {
+        gradleVersion = "6.8"
     }
-}
 
-dependencies {
-    implementation 'org.mybatis.generator:mybatis-generator-core:1.3.7'
-    implementation 'mysql:mysql-connector-java:8.0.11'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
-    implementation 'org.postgresql:postgresql:9.4.1212'
-    system 'org.jetbrains:platform-api:1.0'
-    system 'org.jetbrains:annotations:1.0'
-    system 'org.jetbrains:platform-util-ui:1.0'
-    system 'org.jetbrains:util:1.0'
-    system 'org.jetbrains:platform-core-ui:1.0'
-    system 'org.jetbrains:platform-impl:1.0'
-    system 'org.jetbrains:extensions:1.0'
-    system 'org.jetbrains:intellij-xml:1.0'
-    system 'com.intellij:database-openapi:1.0'
-    system 'com.intellij:java-impl:1.0'
-    system 'com.intellij:java-api:1.0'
-}
-
-group = 'cn.kt'
-version = '1.0.0-SNAPSHOT'
-description = 'better-mybatis-generator'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
+    dependencies {
+        implementation 'org.mybatis.generator:mybatis-generator-core:1.3.7'
+        implementation 'mysql:mysql-connector-java:8.0.11'
+        implementation 'org.mariadb.jdbc:mariadb-java-client:2.5.4'
+        implementation 'org.postgresql:postgresql:9.4.1212'
     }
-}
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+    patchPluginXml {
+        sinceBuild = "201"
+        untilBuild = "202.*"
+    }
+
 }

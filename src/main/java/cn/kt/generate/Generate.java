@@ -251,7 +251,7 @@ public class Generate {
             jdbcConfig.setUserId(username);
             jdbcConfig.setPassword(password);
 
-            Boolean mySQL_8 = config.isMysql_8();
+            boolean mySQL_8 = config.isMysql_8();
             if (mySQL_8) {
                 driverClass = DbType.MySQL_8.getDriverClass();
             }

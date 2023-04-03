@@ -110,10 +110,9 @@ public class UserUI extends JFrame {
 
     private void onOK(String driverClass, String address, PersistentConfig persistentConfig, Project project) {
         try {
-            String originAddress = address;
             Connection conn = null;
             String DbTypeName = "";
-            Boolean isMySQL_8 = config.isMysql_8();
+            boolean isMySQL_8 = config.isMysql_8();
             try {
                 if (driverClass.contains("oracle")) {
                     DbTypeName = "oracle";
@@ -139,11 +138,12 @@ public class UserUI extends JFrame {
                     Class.forName(DbType.MariaDB.getDriverClass());
                 }
 
+                System.out.println("Database URL: " + address);
                 conn = DriverManager.getConnection(address, usernameField.getText(), passwordField.getText());
 
             } catch (Exception ex) {
-                Messages.showMessageDialog(project, "Failed to connect to " + DbTypeName + " database,please check username and password,or mysql is version 8?" + isMySQL_8, "Test connection", Messages.getInformationIcon());
-//                new UserUI(driverClass, address, anActionEvent, config);
+                ex.printStackTrace();
+                Messages.showMessageDialog(project, ex.getMessage(), "Failed to connect database!", Messages.getInformationIcon());
                 return;
             } finally {
                 if (conn != null) {
@@ -156,7 +156,7 @@ public class UserUI extends JFrame {
             if (users == null) {
                 users = new HashMap<>();
             }
-            users.put(originAddress, new User(usernameField.getText()));
+            users.put(address, new User(usernameField.getText()));
             CredentialAttributes attributes = new CredentialAttributes("better-mybatis-generator-" + address, usernameField.getText(), this.getClass(), false);
             Credentials saveCredentials = new Credentials(attributes.getUserName(), passwordField.getText());
             PasswordSafe.getInstance().set(attributes, saveCredentials);
